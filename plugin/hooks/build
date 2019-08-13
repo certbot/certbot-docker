@@ -1,5 +1,8 @@
 #!/bin/bash
 set -ex
 
+BUILD_ARCH=$(echo "${DOCKERFILE_PATH}" | cut -d '.' -f 2)
+CERTBOT_VERSION=$(echo "$DOCKER_TAG" | cut -d '-' -f 2 | sed "s/v//")
 PLUGIN_NAME=${DOCKER_REPO//*\//}
-docker build --build-arg PLUGIN_NAME=${PLUGIN_NAME} -f ${DOCKERFILE_PATH} -t ${IMAGE_NAME} .
+
+docker build --build-arg PLUGIN_NAME="${PLUGIN_NAME}" -f "${DOCKERFILE_PATH}" -t "${DOCKER_REPO}:${BUILD_ARCH}-v${CERTBOT_VERSION}" .
