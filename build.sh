@@ -67,7 +67,7 @@ CERTBOT_PLUGINS_DOCKER_REPOS=(
     "certbot/dns-sakuracloud"
 )
 
-sed -i -E "s|FROM .+|FROM certbot/cerbot:\${TARGET_ARCH}-$CERTBOT_VERSION|g" "$WORK_DIR"/plugin/Dockerfile
+sed -i -E "s|FROM .+|FROM certbot/certbot:\${TARGET_ARCH}-$CERTBOT_VERSION|g" "$WORK_DIR"/plugin/Dockerfile
 for DOCKER_REPO in "${CERTBOT_PLUGINS_DOCKER_REPOS[@]}"; do
     Build "${DOCKER_REPO}" "$WORK_DIR/plugin"
 done

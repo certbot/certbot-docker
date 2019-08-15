@@ -1,6 +1,6 @@
 # Docker Arch (amd64, arm32v6, ...)
 ARG TARGET_ARCH
-FROM certbot/cerbot:${TARGET_ARCH}-v0.37.1
+FROM certbot/certbot:${TARGET_ARCH}-v0.37.1
 
 # Qemu Arch (x86_64, arm, ...)
 ARG QEMU_ARCH
