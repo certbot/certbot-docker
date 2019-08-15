@@ -1,8 +1,19 @@
 #!/bin/bash
 set -ex
 
-BUILD_ARCH=$(echo "${DOCKERFILE_PATH}" | cut -d '.' -f 2)
-CERTBOT_VERSION=$(echo "$DOCKER_TAG" | cut -d '-' -f 2 | sed "s/v//")
+WORK_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+source "$WORK_DIR/../../lib/common"
+
+TARGET_ARCH=$(GetTargetArchFromTag "$DOCKER_TAG")
+QEMU_ARCH=$(GetQemuArchFromTag "$DOCKER_TAG")
+CERTBOT_VERSION=$(GetCerbotVersionFromTag "$DOCKER_TAG")
 PLUGIN_NAME=${DOCKER_REPO//*\//}
 
-docker build --build-arg PLUGIN_NAME="${PLUGIN_NAME}" -f "${DOCKERFILE_PATH}" -t "${DOCKER_REPO}:${BUILD_ARCH}-v${CERTBOT_VERSION}" .
+docker build \
+    --build-arg CERTBOT_VERSION="${CERTBOT_VERSION}" \
+    --build-arg TARGET_ARCH="${TARGET_ARCH}" \
+    --build-arg QEMU_ARCH="${QEMU_ARCH}" \
+    --build-arg PLUGIN_NAME="${PLUGIN_NAME}" \
+    -f "${DOCKERFILE_PATH}" \
+    -t "${DOCKER_REPO}:${TARGET_ARCH}-v${CERTBOT_VERSION}" \
+    .

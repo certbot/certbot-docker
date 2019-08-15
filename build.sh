@@ -23,7 +23,7 @@ BuildArch() {
     DOCKER_ARCH="$1"
     DOCKER_REPO="$2"
     CONTEXT_PATH="$3"
-    DOCKERFILE_PATH="$CONTEXT_PATH/Dockerfile.$DOCKER_ARCH"
+    DOCKERFILE_PATH="$CONTEXT_PATH/Dockerfile"
     DOCKER_TAG="$DOCKER_ARCH-$CERTBOT_VERSION"
 
     pushd "$CONTEXT_PATH"
@@ -67,7 +67,7 @@ CERTBOT_PLUGINS_DOCKER_REPOS=(
     "certbot/dns-sakuracloud"
 )
 
-sed -i -E "s/FROM certbot\\/certbot\\:(\\w+)\\-(.+)/FROM certbot\\/certbot\\:\\1\\-$CERTBOT_VERSION/" "$WORK_DIR"/plugin/Dockerfile.*
+sed -i -E "s|FROM .+|FROM certbot/cerbot:\${TARGET_ARCH}-$CERTBOT_VERSION|g" "$WORK_DIR"/plugin/Dockerfile
 for DOCKER_REPO in "${CERTBOT_PLUGINS_DOCKER_REPOS[@]}"; do
     Build "${DOCKER_REPO}" "$WORK_DIR/plugin"
 done

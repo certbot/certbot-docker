@@ -1,39 +1,10 @@
 #!/bin/bash
 set -ex
 
-DEFAULT_ARCH="amd64"
-BUILD_ARCH=$(echo "$DOCKER_TAG" | cut -d '-' -f 1)
+WORK_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+source "$WORK_DIR/../../lib/common"
 
-RegisterQemuHandlers() {
-    docker run --rm --privileged multiarch/qemu-user-static:register --reset
-}
+QEMU_ARCH=$(GetQemuArchFromTag "$DOCKER_TAG")
 
-DownloadQemuStatic() {
-    case "$1" in
-        "amd64")
-            QEMU_ARCH="x86_64"
-            ;;
-        "arm32v6")
-            QEMU_ARCH="arm"
-            ;;
-        "*")
-            echo "Not supported build architecture."
-            exit -1
-    esac
-
-    QEMU_DOWNLOAD_URL="https://github.com/multiarch/qemu-user-static/releases/download"
-    QEMU_LATEST_TAG=$(curl -s https://api.github.com/repos/multiarch/qemu-user-static/tags \
-        | grep 'name.*v[0-9]' \
-        | head -n 1 \
-        | cut -d '"' -f 4)
-    curl -SL "${QEMU_DOWNLOAD_URL}/${QEMU_LATEST_TAG}/x86_64_qemu-${QEMU_ARCH}-static.tar.gz" \
-        | tar xzv
-}
-
-if [ "${BUILD_ARCH}" == "${DEFAULT_ARCH}" ]; then
-    echo "Default architecture. Nothing to do."
-    exit 0
-fi
-
-RegisterQemuHandlers
-DownloadQemuStatic "${BUILD_ARCH}"
+RegisterQemuHandlers "${QEMU_ARCH}"
+DownloadQemuStatic "${QEMU_ARCH}"

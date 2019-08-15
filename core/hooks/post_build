@@ -1,27 +1,9 @@
 #!/bin/bash
 set -ex
 
-DEFAULT_ARCH="amd64"
-BUILD_ARCH=$(echo "$DOCKER_TAG" | cut -d '-' -f 1)
+WORK_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+source "$WORK_DIR/../../lib/common"
 
-RemoveQemuStatic() {
-    case "$1" in
-        "amd64")
-            QEMU_ARCH="x86_64"
-            ;;
-        "arm32v6")
-            QEMU_ARCH="arm"
-            ;;
-        "*")
-            echo "Not supported build architecture."
-            exit -1
-    esac
-    rm -f qemu-${QEMU_ARCH}-static
-}
+QEMU_ARCH=$(GetQemuArchFromTag "$DOCKER_TAG")
 
-if [ "${BUILD_ARCH}" == "${DEFAULT_ARCH}" ]; then
-    echo "Default architecture. Nothing to do."
-    exit 0
-fi
-
-RemoveQemuStatic "${BUILD_ARCH}"
+RemoveQemuStatic "${QEMU_ARCH}"

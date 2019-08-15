@@ -1,17 +1,20 @@
 #!/bin/bash
 set -ex
 
+WORK_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+source "$WORK_DIR/../../lib/common"
+
 DEFAULT_ARCH="amd64"
-BUILD_ARCH=$(echo "$DOCKER_TAG" | cut -d '-' -f 1)
-CERTBOT_VERSION=$(echo "$DOCKER_TAG" | cut -d '-' -f 2 | sed "s/v//")
+TARGET_ARCH=$(GetTargetArchFromTag "$DOCKER_TAG")
+CERTBOT_VERSION=$(GetCerbotVersionFromTag "$DOCKER_TAG")
 
 TagImage() {
     docker tag "${DOCKER_REPO}:$1" "${DOCKER_REPO}:$2"
     docker push "${DOCKER_REPO}:$2"
 }
 
-TagImage "${BUILD_ARCH}-v${CERTBOT_VERSION}" "${BUILD_ARCH}-latest"
-if [ "${BUILD_ARCH}" == "${DEFAULT_ARCH}" ]; then
-    TagImage "${BUILD_ARCH}-v${CERTBOT_VERSION}" "v${CERTBOT_VERSION}"
-    TagImage "${BUILD_ARCH}-latest" "latest"
+TagImage "${TARGET_ARCH}-v${CERTBOT_VERSION}" "${TARGET_ARCH}-latest"
+if [ "${TARGET_ARCH}" == "${DEFAULT_ARCH}" ]; then
+    TagImage "${TARGET_ARCH}-v${CERTBOT_VERSION}" "v${CERTBOT_VERSION}"
+    TagImage "${TARGET_ARCH}-latest" "latest"
 fi
