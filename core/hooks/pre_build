@@ -4,7 +4,7 @@ set -ex
 WORK_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 source "$WORK_DIR/../../lib/common"
 
-QEMU_ARCH=$(GetQemuArchFromTag "$DOCKER_TAG")
-
-RegisterQemuHandlers "${QEMU_ARCH}"
-DownloadQemuStatic "${QEMU_ARCH}"
+RegisterQemuHandlers
+for TARGET_ARCH in "${ALL_TARGET_ARCH[@]}"; do
+    DownloadQemuStatic "${TARGET_ARCH}"
+done

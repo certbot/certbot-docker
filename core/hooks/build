@@ -4,14 +4,15 @@ set -ex
 WORK_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 source "$WORK_DIR/../../lib/common"
 
-TARGET_ARCH=$(GetTargetArchFromTag "$DOCKER_TAG")
-QEMU_ARCH=$(GetQemuArchFromTag "$DOCKER_TAG")
 CERTBOT_VERSION=$(GetCerbotVersionFromTag "$DOCKER_TAG")
 
-docker build \
-    --build-arg CERTBOT_VERSION="${CERTBOT_VERSION}" \
-    --build-arg TARGET_ARCH="${TARGET_ARCH}" \
-    --build-arg QEMU_ARCH="${QEMU_ARCH}" \
-    -f "${DOCKERFILE_PATH}" \
-    -t "${DOCKER_REPO}:${TARGET_ARCH}-v${CERTBOT_VERSION}" \
-    .
+for TARGET_ARCH in "${ALL_TARGET_ARCH[@]}"; do
+    QEMU_ARCH=$(GetQemuArch "$TARGET_ARCH")
+    docker build \
+        --build-arg CERTBOT_VERSION="${CERTBOT_VERSION}" \
+        --build-arg TARGET_ARCH="${TARGET_ARCH}" \
+        --build-arg QEMU_ARCH="${QEMU_ARCH}" \
+        -f "${DOCKERFILE_PATH}" \
+        -t "${DOCKER_REPO}:${TARGET_ARCH}-v${CERTBOT_VERSION}" \
+        .
+done
