@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ALL_TARGET_ARCH=(amd64 arm32v6)
+ALL_TARGET_ARCH=(amd64 arm32v6 arm64v8)
 
 GetCerbotVersionFromTag() {
     echo "$1" | sed "s/v//"
@@ -13,6 +13,9 @@ GetQemuArch() {
             ;;
         "arm32v6")
             echo "arm"
+            ;;
+        "arm64v8")
+            echo "aarch64"
             ;;
         "*")
             echo "Not supported build architecture '$1'." >&2
