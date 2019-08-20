@@ -5,8 +5,7 @@ export DEFAULT_ARCH=amd64
 
 GetCerbotVersionFromTag() {
     TAG=$1
-
-    echo "$TAG" | sed "s/v//"
+    echo "${TAG//v/}"
 }
 
 GetQemuArch() {
