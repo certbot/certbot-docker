@@ -58,3 +58,5 @@ CERTBOT_PLUGINS_DOCKER_REPOS=(
 for DOCKER_REPO in "${CERTBOT_PLUGINS_DOCKER_REPOS[@]}"; do
     Build "${DOCKER_REPO}" "$WORK_DIR/plugin"
 done
+
+Cleanup
