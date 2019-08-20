@@ -26,13 +26,9 @@ To setup the publication process, the target DockerHub project must be configure
 3) Activate the AutoBuild feature, using the current GIT repository as source (eg. https.//github.com/certbot/certbot-docker.git) and the user defined in 1).
 4) Define a unique tag build rule in AutoBuild configuration:
 
-    _For a Certbot core Docker (amd64)_ -> Source: `/^(v[0-9.]+).*$/`, Tag: `amd64-{\1}`, Dockerfile: `Dockerfile.amd64`, Build context: `/core`
+    _For a Certbot core Docker_ -> Source: `/^(v[0-9.]+).*$/`, Tag: `{\1}`, Dockerfile: `Dockerfile`, Build context: `/core`
 
-    _For a Certbot core Docker (arm32v6)_ -> Source: `/^(v[0-9.]+).*$/`, Tag: `arm32v6-{\1}`, Dockerfile: `Dockerfile.arm32v6`, Build context: `/core`
-
-    _For a Certbot DNS plugin Docker (amd64)_ -> Source: `/^(v[0-9.]+).*$/`, Tag: `amd64-{\1}`, Dockerfile: `Dockerfile.amd64`, Build context: `/plugin`
-
-    _For a Certbot DNS plugin Docker (arm32v6)_ -> Source: `/^(v[0-9.]+).*$/`, Tag: `arm32v6-{\1}`, Dockerfile: `Dockerfile.arm32v6`, Build context: `/plugin`
+    _For a Certbot DNS plugin Docker_ -> Source: `/^(v[0-9.]+).*$/`, Tag: `{\1}`, Dockerfile: `Dockerfile`, Build context: `/plugin`
 
 Publication worfklow
 --------------------
@@ -62,3 +58,14 @@ This script will trigger the publication on DockerHub of all Dockers for the giv
 - commit locally the modifications,
 - tag this commit with the given version,
 - push this tag and the updated `master` branch.
+
+Assuming the version to publish is `v0.35.0`, the following docker images will be created at DockerHub.
+
+- certbot/certbot:v0.35.0 *(amd64 architecture)*
+- certbot/certbot:amd64-v0.35.0
+- certbot/certbot:arm32v6-v0.35.0
+- certbot/certbot:arm64v8-v0.35.0
+- certbot/certbot:latest *(amd64 architecture)*
+- certbot/certbot:amd64-latest
+- certbot/certbot:arm32v6-latest
+- certbot/certbot:arm64v8-latest
