@@ -50,11 +50,11 @@ TagDockerImage() {
     ARCH=$1
     VERSION=$2
 
-    docker tag "${DOCKER_REPO}:${ARCH}-v${VERSION}" "${ARCH}-latest"
+    docker tag "${DOCKER_REPO}:${ARCH}-v${VERSION}" "${DOCKER_REPO}:${ARCH}-latest"
     docker push "${DOCKER_REPO}:${ARCH}-latest"
     if [ "${ARCH}" == "${DEFAULT_ARCH}" ]; then
-        docker tag "${DOCKER_REPO}:${ARCH}-v${VERSION}" "v${VERSION}"
-        docker tag "${DOCKER_REPO}:${ARCH}-latest" "latest"
+        docker tag "${DOCKER_REPO}:${ARCH}-v${VERSION}" "${DOCKER_REPO}:v${VERSION}"
+        docker tag "${DOCKER_REPO}:${ARCH}-latest" "${DOCKER_REPO}:latest"
         docker push "${DOCKER_REPO}:v${VERSION}"
         docker push "${DOCKER_REPO}:latest"
     fi
