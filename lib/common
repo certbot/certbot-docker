@@ -1,6 +1,7 @@
 #!/bin/bash
 
 ALL_TARGET_ARCH=(amd64 arm32v6 arm64v8)
+DEFAULT_ARCH=amd64
 
 GetCerbotVersionFromTag() {
     echo "$1" | sed "s/v//"
@@ -38,4 +39,18 @@ DownloadQemuStatic() {
 
 RegisterQemuHandlers() {
     docker run --rm --privileged multiarch/qemu-user-static:register --reset
+}
+
+TagDockerImage() {
+    ARCH=$1
+    VERSION=$2
+
+    docker tag "${DOCKER_REPO}:${ARCH}-v${VERSION}" "${ARCH}-latest"
+    docker push "${DOCKER_REPO}:${ARCH}-latest"
+    if [ "${ARCH}" == "${DEFAULT_ARCH}" ]; then
+        docker tag "${DOCKER_REPO}:${ARCH}-v${VERSION}" "v${VERSION}"
+        docker tag "${DOCKER_REPO}:${ARCH}-latest" "latest"
+        docker push "${DOCKER_REPO}:v${VERSION}"
+        docker push "${DOCKER_REPO}:latest"
+    fi
 }
