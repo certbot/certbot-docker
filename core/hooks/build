@@ -15,4 +15,14 @@ for TARGET_ARCH in "${ALL_TARGET_ARCH[@]}"; do
         -f "${DOCKERFILE_PATH}" \
         -t "${DOCKER_REPO}:${TARGET_ARCH}-v${CERTBOT_VERSION}" \
         .
+    docker push  "${DOCKER_REPO}:${TARGET_ARCH}-v${CERTBOT_VERSION}"
+
+    docker tag "${DOCKER_REPO}:${TARGET_ARCH}-v${VERSION}" "${DOCKER_REPO}:${TARGET_ARCH}-latest"
+    docker push "${DOCKER_REPO}:${TARGET_ARCH}-latest"
+    if [ "${TARGET_ARCH}" == "amd64" ]; then
+        docker tag "${DOCKER_REPO}:${TARGET_ARCH}-v${VERSION}" "${DOCKER_REPO}:v${VERSION}"
+        docker tag "${DOCKER_REPO}:${TARGET_ARCH}-latest" "${DOCKER_REPO}:latest"
+        docker push "${DOCKER_REPO}:v${VERSION}"
+        docker push "${DOCKER_REPO}:latest"
+    fi
 done
