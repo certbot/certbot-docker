@@ -8,13 +8,5 @@ CERTBOT_VERSION=$(GetCerbotVersionFromTag "$DOCKER_TAG")
 PLUGIN_NAME=${DOCKER_REPO//*\//}
 
 for TARGET_ARCH in "${ALL_TARGET_ARCH[@]}"; do
-    QEMU_ARCH=$(GetQemuArch "$TARGET_ARCH")
-    docker build \
-        --build-arg CERTBOT_VERSION="${CERTBOT_VERSION}" \
-        --build-arg TARGET_ARCH="${TARGET_ARCH}" \
-        --build-arg QEMU_ARCH="${QEMU_ARCH}" \
-        --build-arg PLUGIN_NAME="${PLUGIN_NAME}" \
-        -f "${DOCKERFILE_PATH}" \
-        -t "${DOCKER_REPO}:${TARGET_ARCH}-v${CERTBOT_VERSION}" \
-        .
+    BuildPluginDockerImage "${TARGET_ARCH}" "${CERTBOT_VERSION}" "${PLUGIN_NAME}"
 done

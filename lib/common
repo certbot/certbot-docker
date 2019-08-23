@@ -60,3 +60,33 @@ TagDockerImage() {
         docker push "${DOCKER_REPO}:latest"
     fi
 }
+
+BuildCoreDockerImage() {
+    ARCH=$1
+    VERSION=$2
+
+    QEMU=$(GetQemuArch "$ARCH")
+    docker build \
+        --build-arg CERTBOT_VERSION="${VERSION}" \
+        --build-arg TARGET_ARCH="${ARCH}" \
+        --build-arg QEMU_ARCH="${QEMU}" \
+        -f "${DOCKERFILE_PATH}" \
+        -t "${DOCKER_REPO}:${ARCH}-v${VERSION}" \
+        .
+}
+
+BuildPluingDockerImage() {
+    ARCH=$1
+    VERSION=$2
+    PLUGIN=$3
+
+    QEMU=$(GetQemuArch "$ARCH")
+    docker build \
+        --build-arg CERTBOT_VERSION="${VERSION}" \
+        --build-arg TARGET_ARCH="${ARCH}" \
+        --build-arg QEMU_ARCH="${QEMU}" \
+        --build-arg PLUGIN_NAME="${PLUGIN}" \
+        -f "${DOCKERFILE_PATH}" \
+        -t "${DOCKER_REPO}:${ARCH}-v${VERSION}" \
+        .
+}
