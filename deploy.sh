@@ -27,8 +27,6 @@ sed -i -e "s|branch=.*)\\]|branch=$BRANCH_NAME)]|g" core/README.md
 sed -i -e "s|current-.*-blue\\.svg|current-$CERTBOT_VERSION-blue.svg|g" plugin/README.md
 sed -i -e "s|branch=.*)\\]|branch=$BRANCH_NAME)]|g" plugin/README.md
 
-sed -i -E "s|FROM .+|FROM certbot/certbot:\${TARGET_ARCH}-$CERTBOT_VERSION|g" plugin/Dockerfile
-
 pushd "$WORK_DIR"
     git commit -a -m "Release version $CERTBOT_DOCKER_VERSION" --allow-empty
     git tag "$CERTBOT_DOCKER_VERSION"
