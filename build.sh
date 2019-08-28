@@ -21,7 +21,8 @@ Cleanup() {
 
 Build() {
     DOCKER_REPO="$1"
-    CONTEXT_PATH="$2"
+    CERTBOT_VERSION="$2"
+    CONTEXT_PATH="$3"
     DOCKERFILE_PATH="$CONTEXT_PATH/Dockerfile"
     DOCKER_TAG="$CERTBOT_VERSION"
     pushd "$CONTEXT_PATH"
@@ -35,7 +36,7 @@ WORK_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 CERTBOT_VERSION="$1"
 
 # Step 1: Certbot core Docker
-Build "certbot/certbot" "$WORK_DIR/core"
+Build "certbot/certbot" "$CERTBOT_VERSION" "$WORK_DIR/core"
 
 # Step 2: Certbot dns plugins Dockers
 CERTBOT_PLUGINS_DOCKER_REPOS=(
@@ -56,7 +57,7 @@ CERTBOT_PLUGINS_DOCKER_REPOS=(
 )
 
 for DOCKER_REPO in "${CERTBOT_PLUGINS_DOCKER_REPOS[@]}"; do
-    Build "${DOCKER_REPO}" "$WORK_DIR/plugin"
+    Build "${DOCKER_REPO}" "$CERTBOT_VERSION" "$WORK_DIR/plugin"
 done
 
 Cleanup
