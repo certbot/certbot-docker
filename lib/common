@@ -47,22 +47,7 @@ RegisterQemuHandlers() {
     docker run --rm --privileged multiarch/qemu-user-static:register --reset
 }
 
-TagDockerImage() {
-    ARCH=$1
-    VERSION=$2
-
-    docker tag "${DOCKER_REPO}:${ARCH}-v${VERSION}" "${DOCKER_REPO}:${ARCH}-latest"
-    docker push "${DOCKER_REPO}:${ARCH}-v${VERSION}"
-    docker push "${DOCKER_REPO}:${ARCH}-latest"
-    if [ "${ARCH}" == "${DEFAULT_ARCH}" ]; then
-        docker tag "${DOCKER_REPO}:${ARCH}-v${VERSION}" "${DOCKER_REPO}:v${VERSION}"
-        docker tag "${DOCKER_REPO}:${ARCH}-latest" "${DOCKER_REPO}:latest"
-        docker push "${DOCKER_REPO}:v${VERSION}"
-        docker push "${DOCKER_REPO}:latest"
-    fi
-}
-
-BuildCoreDockerImage() {
+BuildDockerCoreImage() {
     ARCH=$1
     VERSION=$2
 
@@ -76,7 +61,7 @@ BuildCoreDockerImage() {
         .
 }
 
-BuildPluginDockerImage() {
+BuildDockerPluginImage() {
     ARCH=$1
     VERSION=$2
     PLUGIN=$3
@@ -90,4 +75,25 @@ BuildPluginDockerImage() {
         -f "${DOCKERFILE_PATH}" \
         -t "${DOCKER_REPO}:${ARCH}-v${VERSION}" \
         .
+}
+
+PushDockerImage() {
+    ARCH=$1
+    VERSION=$2
+
+    docker push "${DOCKER_REPO}:${ARCH}-v${VERSION}"
+}
+
+TagDockerImageAliases() {
+    ARCH=$1
+    VERSION=$2
+
+    docker tag "${DOCKER_REPO}:${ARCH}-v${VERSION}" "${DOCKER_REPO}:${ARCH}-latest"
+    docker push "${DOCKER_REPO}:${ARCH}-latest"
+    if [ "${ARCH}" == "${DEFAULT_ARCH}" ]; then
+        docker tag "${DOCKER_REPO}:${ARCH}-v${VERSION}" "${DOCKER_REPO}:v${VERSION}"
+        docker tag "${DOCKER_REPO}:${ARCH}-v${VERSION}" "${DOCKER_REPO}:latest"
+        docker push "${DOCKER_REPO}:v${VERSION}"
+        docker push "${DOCKER_REPO}:latest"
+    fi
 }
