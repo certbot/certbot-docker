@@ -8,4 +8,5 @@ CERTBOT_VERSION=$(GetCerbotVersionFromTag "$DOCKER_TAG")
 
 for TARGET_ARCH in "${ALL_TARGET_ARCH[@]}"; do
     TagDockerImageAliases "${TARGET_ARCH}" "${CERTBOT_VERSION}"
+    PushDockerImageAliases "${TARGET_ARCH}" "${CERTBOT_VERSION}"
 done
