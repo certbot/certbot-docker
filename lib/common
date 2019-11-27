@@ -7,6 +7,9 @@ export ALL_TARGET_ARCH=(amd64 arm32v6 arm64v8)
 # Architecture used in tags with no architecture especified (certbot/certbot:latest, certbot/cerbot:v0.35.0, ...)
 export DEFAULT_ARCH=amd64
 
+# Enable manifests
+export DOCKER_CLI_EXPERIMENTAL=enabled
+
 # Returns certbot version (ex. v0.35.0 returns 0.35.0)
 # Usage: GetCerbotVersionFromTag <DOCKER_VERSION>
 GetCerbotVersionFromTag() {
@@ -28,6 +31,25 @@ GetQemuArch() {
             ;;
         "arm64v8")
             echo "aarch64"
+            ;;
+        "*")
+            echo "Not supported build architecture '$1'." >&2
+            exit -1
+    esac
+}
+
+GetManifestBoard() {
+    ARCH=$1
+
+    case "$ARCH" in
+        "amd64")
+            echo "--os linux --arch amd64"
+            ;;
+        "arm32v6")
+            echo "--os linux --arch arm"
+            ;;
+        "arm64v8")
+            echo "--os linux --arch arm64"
             ;;
         "*")
             echo "Not supported build architecture '$1'." >&2
@@ -101,42 +123,36 @@ PushDockerImage() {
     docker push "${DOCKER_REPO}:${ARCH}-v${VERSION}"
 }
 
-# Creates docker image "latest" tag for a specific architecture and certbot version.
-# In case of default architecture, it also creates tags without architecture part.
-# As an example, for version 0.35.0 in amd64 (default arquitecture):
-#  - certbot/certbot:v0.35.0
-#  - certbot/certbot:latest
-#  - certbot/certbot:amd64-latest
-# For version 0.35.0 in arm32v6:
-#  - certbot/certbot:arm32v6-latest
-# Usage: TagDockerImageAliases [amd64|arm32v6|arm64v8] <CERTBOT_VERSION>
-TagDockerImageAliases() {
-    ARCH=$1
-    VERSION=$2
-
-    docker tag "${DOCKER_REPO}:${ARCH}-v${VERSION}" "${DOCKER_REPO}:${ARCH}-latest"
-    if [ "${ARCH}" == "${DEFAULT_ARCH}" ]; then
-        docker tag "${DOCKER_REPO}:${ARCH}-v${VERSION}" "${DOCKER_REPO}:v${VERSION}"
-        docker tag "${DOCKER_REPO}:${ARCH}-v${VERSION}" "${DOCKER_REPO}:latest"
-    fi
-}
-
-# Pushes docker "latest" image for a specific architecture and certbot version.
-# In case of default architecture, it also pushes image without architecture part.
-# As an example, for version 0.35.0 in amd64 (default arquitecture):
-#  - certbot/certbot:v0.35.0
-#  - certbot/certbot:latest
-#  - certbot/certbot:amd64-latest
-# For version 0.35.0 in arm32v6:
+# Creates docker image "latest" tag for a specific architecture and certbot version, and pushes it.
+# As an example, for version 0.35.0 in arm32v6:
 #  - certbot/certbot:arm32v6-latest
 # Usage: PushDockerImageAliases [amd64|arm32v6|arm64v8] <CERTBOT_VERSION>
 PushDockerImageAliases() {
     ARCH=$1
     VERSION=$2
 
+    docker tag "${DOCKER_REPO}:${ARCH}-v${VERSION}" "${DOCKER_REPO}:${ARCH}-latest"
     docker push "${DOCKER_REPO}:${ARCH}-latest"
-    if [ "${ARCH}" == "${DEFAULT_ARCH}" ]; then
-        docker push "${DOCKER_REPO}:v${VERSION}"
-        docker push "${DOCKER_REPO}:latest"
-    fi
+}
+
+# Prepare the multiarch docker manifests for the given architectures and certbot version, and pushes it.
+# As an example, for version 0.35.0:
+#  - certbot/certbot:v0.35.0
+#  - certbot/certbot:latest
+# Usage: TagDockerImageAliases <CERTBOT_VERSION>
+PushMultiarchManifest() {
+    VERSION=$1
+
+    MANIFEST_TAG=""
+    MANIFEST_LATEST=""
+    for ARCH in ${ALL_TARGET_ARCH[@]}; do
+        MANIFEST_TAG="$MANIFEST_TAG ${DOCKER_REPO}:${ARCH}-v${VERSION}"
+        MANIFEST_LATEST="$MANIFEST_LATEST ${DOCKER_REPO}:${ARCH}-latest"
+    done
+    docker manifest create --amend "${DOCKER_REPO}:v${VERSION}" $MANIFEST_TAG
+    docker manifest create --amend "${DOCKER_REPO}:latest" $MANIFEST_LATEST
+    for ARCH in ${ALL_TARGET_ARCH[@]}; do
+        docker manifest annotate "${DOCKER_REPO}:v${VERSION}" "${DOCKER_REPO}:${ARCH}-v${VERSION}" $(GetManifestBoard "${ARCH}")
+        docker manifest annotate "${DOCKER_REPO}:latest" "${DOCKER_REPO}:${ARCH}-latest" $(GetManifestBoard "${ARCH}")
+    done
 }
