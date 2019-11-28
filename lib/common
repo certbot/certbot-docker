@@ -149,10 +149,11 @@ PushMultiarchManifest() {
         MANIFEST_TAG="$MANIFEST_TAG ${DOCKER_REPO}:${ARCH}-v${VERSION}"
         MANIFEST_LATEST="$MANIFEST_LATEST ${DOCKER_REPO}:${ARCH}-latest"
     done
-    docker manifest create --amend "${DOCKER_REPO}:v${VERSION}" $MANIFEST_TAG
-    docker manifest create --amend "${DOCKER_REPO}:latest" $MANIFEST_LATEST
+    docker manifest create "${DOCKER_REPO}:v${VERSION}" $MANIFEST_TAG
+    docker manifest create "${DOCKER_REPO}:latest" $MANIFEST_LATEST
     for ARCH in ${ALL_TARGET_ARCH[@]}; do
         docker manifest annotate "${DOCKER_REPO}:v${VERSION}" "${DOCKER_REPO}:${ARCH}-v${VERSION}" $(GetManifestBoard "${ARCH}")
         docker manifest annotate "${DOCKER_REPO}:latest" "${DOCKER_REPO}:${ARCH}-latest" $(GetManifestBoard "${ARCH}")
     done
 }
+
