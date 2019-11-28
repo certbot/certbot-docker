@@ -80,6 +80,11 @@ BuildDockerPluginImage() {
     ARCH=$1
     VERSION=$2
     PLUGIN=$3
+    USE_LOCAL_PYPI_SERVER=$4
+
+    if [ "${USE_LOCAL_PYPI_SERVER}" = true]; then
+        PIP_EXTRA_INDEX_URL=http://localhost:8080/simple/
+    fi
 
     QEMU=$(GetQemuArch "$ARCH")
     docker build \
@@ -87,6 +92,7 @@ BuildDockerPluginImage() {
         --build-arg TARGET_ARCH="${ARCH}" \
         --build-arg QEMU_ARCH="${QEMU}" \
         --build-arg PLUGIN_NAME="${PLUGIN}" \
+        --build-arg PIP_EXTRA_INDEX_URL="${PIP_EXTRA_INDEX_URL}"
         -f "${DOCKERFILE_PATH}" \
         -t "${DOCKER_REPO}:${ARCH}-v${VERSION}" \
         .
@@ -139,4 +145,14 @@ PushDockerImageAliases() {
         docker push "${DOCKER_REPO}:v${VERSION}"
         docker push "${DOCKER_REPO}:latest"
     fi
+}
+
+RunLocalPypiServer() {
+    PACKAGE_PATH=$1
+
+    docker run --net=host --rm -v "${PACKAGE_PATH}:/data/packages" --name pypiserver pypiserver/pypiserver -d
+    function cleanup() {
+        docker rm --force pypiserver
+    }
+    trap cleanup EXIT
 }

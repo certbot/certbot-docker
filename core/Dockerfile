@@ -7,8 +7,12 @@ ARG QEMU_ARCH
 ENV QEMU_ARCH=${QEMU_ARCH}
 COPY qemu-${QEMU_ARCH}-static /usr/bin/
 
+# Define Certbot version
 ARG CERTBOT_VERSION
 ENV CERTBOT_VERSION=${CERTBOT_VERSION}
+
+# Pypi extra index for the build
+ARG PIP_EXTRA_INDEX_URL
 
 ENTRYPOINT [ "certbot" ]
 EXPOSE 80 443
