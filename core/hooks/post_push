@@ -10,4 +10,4 @@ for TARGET_ARCH in "${ALL_TARGET_ARCH[@]}"; do
     PushDockerImageAliases "${TARGET_ARCH}" "${CERTBOT_VERSION}"
 done
 
-PushDockerImageAliases "${CERTBOT_VERSION}"
+PushMultiarchManifest "${CERTBOT_VERSION}"
