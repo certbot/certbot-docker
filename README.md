@@ -3,7 +3,7 @@ Running Certbot in Docker
 
 Docker is an amazingly simple and quick way to obtain a certificate. However, this mode of operation is unable to install certificates or configure your webserver, because our installer plugins cannot reach your webserver from inside the Docker container.
  
-**Most users should use the operating system packages (see instructions at certbot.eff.org) or, as a fallback, certbot-auto. You should only use Docker if you are sure you know what you are doing and have a good reason to do so.**
+**Most users should install Certbot by following the installation instructions at https://certbot.eff.org/instructions. You should only use Docker if you are sure you know what you are doing and have a good reason to do so.**
 
 For more information, please read [Certbot - Running with Docker](https://certbot.eff.org/docs/install.html#running-with-docker).
 
